@@ -24,7 +24,7 @@ class ViewController: UIViewController {
     private func setupFeed() {
         let feed = StoryFeedView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height/2.1))
         
-        feed.font = UIFont(name: "Montserrat-Medium", size: 20)
+        feed.font = UIFont(name: "Montserrat-Medium", size: 18)
         feed.stories(stories: viewModel.currentStories())
         feed.timeLimit = 5.0
         feed.tint = viewModel.tintColor

@@ -65,8 +65,10 @@ public class ViewModel {
     
     private func imageManager(url: String, completion: @escaping ((UIImage?) -> ())) {
         let imageManager = SDWebImageManager()
-        imageManager.loadImage(with: URL(string: url), options: .refreshCached, progress: nil) { (image, _, _, _, _, _) in
-            completion(image)
+        imageManager.loadImage(with: URL(string: url), options: .refreshCached, progress: nil) { (image, _, _, _, finished, _) in
+            if finished {
+                completion(image)
+            }
         }
     }
     
