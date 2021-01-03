@@ -358,10 +358,10 @@ extension StoryFeedView {
             self.gradientView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             self.gradientView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             
-            self.gradientView.heightAnchor.constraint(equalToConstant: self.bounds.height/3),
+            self.gradientView.heightAnchor.constraint(equalToConstant: self.bounds.height/2.2),
             self.headlineLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            self.headlineLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            self.headlineLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            self.headlineLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
+            self.headlineLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
             
             self.progressStackView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 6),
             self.progressStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 4),
@@ -387,8 +387,8 @@ extension StoryFeedView {
                 UIColor.white.cgColor
             ]
         }
-        gradient.frame = CGRect(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height/3)
-        gradientView.layer.insertSublayer(gradient, at:0)
+        gradient.frame = CGRect(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height/2.2)
+        gradientView.layer.insertSublayer(gradient, at: 0)
         gradientAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
             self.gradientView.alpha = 1.0
         })
