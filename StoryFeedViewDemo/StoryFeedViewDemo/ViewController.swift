@@ -7,17 +7,15 @@
 
 import UIKit
 import StoryFeedView
+import SafariServices
 
 class ViewController: UIViewController {
     var viewModel = ViewModel()
-
+    let haptic = UIImpactFeedbackGenerator(style: .light)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        if #available(iOS 13.0, *) {
-            self.view.backgroundColor = .systemBackground
-        } else {
-            self.view.backgroundColor = .white
-        }
+        self.view.backgroundColor = viewModel.backgroundColor
         viewModel.fetchStories {
             self.setupFeed()
         }
@@ -30,19 +28,37 @@ class ViewController: UIViewController {
         feed.amount = viewModel.count()
         feed.story = viewModel.currentStory()
         feed.timeLimit = 5.0
-        feed.tint = .green
+        feed.tint = viewModel.tintColor
         
+        feed.headlineAction = {
+            guard let url = self.viewModel.storyURL() else { return }
+            let configuration = SFSafariViewController.Configuration()
+            configuration.entersReaderIfAvailable = true
+            let safariVC = SFSafariViewController(url: url, configuration: configuration)
+            safariVC.modalPresentationStyle = .overFullScreen
+            safariVC.preferredControlTintColor = self.viewModel.tintColor
+            self.present(safariVC, animated: true)
+        }
         feed.timerDidEnd = {
+            self.haptic.impactOccurred()
             self.viewModel.increaseIndex()
             feed.story = self.viewModel.currentStory()
         }
         feed.rightTapAction = {
+            self.haptic.impactOccurred()
             self.viewModel.increaseIndex()
             feed.story = self.viewModel.currentStory()
         }
         feed.leftTapAction = {
+            self.haptic.impactOccurred()
             self.viewModel.decreaseIndex()
             feed.story = self.viewModel.currentStory()
+        }
+        feed.longPressAction = {
+            self.haptic.impactOccurred()
+        }
+        feed.releaseLongPressAction = {
+            self.haptic.impactOccurred()
         }
         
         self.view.addSubview(feed)

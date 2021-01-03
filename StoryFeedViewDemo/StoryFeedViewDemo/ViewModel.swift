@@ -14,6 +14,22 @@ public class ViewModel {
     private let news = DemoData.news()
     private var stories = [Story]()
     
+    public var backgroundColor: UIColor {
+        if #available(iOS 13.0, *) {
+            return .systemBackground
+        } else {
+            return .white
+        }
+    }
+    
+    public var tintColor: UIColor {
+        if #available(iOS 13.0, *) {
+            return .systemGreen
+        } else {
+            return .green
+        }
+    }
+    
     public func currentStory() -> Story? {
         return stories[index]
     }
@@ -28,6 +44,11 @@ public class ViewModel {
     
     public func count() -> Int {
         return news?.items?.count ?? 0
+    }
+    
+    public func storyURL() -> URL? {
+        guard let url = news?.items?[index].link else { return nil }
+        return URL(string: url)
     }
     
     public func fetchStories(completion: @escaping(() -> ())) {
