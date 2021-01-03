@@ -56,23 +56,9 @@ public class StoryFeedView: UIView {
     }
     
     /// Story to be displayed
-    public var story: Story? {
+    private var story: Story? {
         didSet {
             resetAnimations()
-        }
-    }
-    
-    /// The amount of stories to be displayed
-    public var amount: Int? {
-        didSet {
-            removeBars()
-            guard let amount = amount else { return }
-            viewModel.amount = amount
-            for _ in 0 ..< amount {
-                let bar = newProgressBar()
-                bar.translatesAutoresizingMaskIntoConstraints = false
-                progressStackView.addArrangedSubview(bar)
-            }
         }
     }
     
@@ -165,10 +151,20 @@ public class StoryFeedView: UIView {
     
     //MARK: - Methods
     /// Manually move to a specific index and story
-    public func moveTo(index: Int, story: Story?) {
-        self.stopAnimations()
+    public func moveTo(index: Int) {
         viewModel.setIndex(index)
-        self.story = story
+        viewModel.setIndex(viewModel.isValid(index: index) ? index : 0)
+        setupBars()
+        if viewModel.currentIndex() > 0 {
+            self.fillBars(upTo: viewModel.currentIndex()-1)
+        }
+        self.story = viewModel.currentStory()
+    }
+    
+    /// Setup stories to be displayed  by the view and the index of the story to be displayed
+    public func stories(stories: [Story]?, moveTo index: Int = 0) {
+        viewModel.setStories(stories)
+        moveTo(index: index)
     }
     
     private func resetAnimations() {
@@ -216,12 +212,12 @@ extension StoryFeedView {
     }
 
     @objc private func executeTap(tap: UITapGestureRecognizer) {
-        let point = tap.location(in: self)
+        let tapLocation = tap.location(in: self)
         let leftArea = CGRect(x: 0, y: 0, width: bounds.width/4, height: bounds.height)
         let rightArea = CGRect(x: bounds.width, y: 0, width: -bounds.width/4, height: bounds.height)
-        if leftArea.contains(point) {
+        if leftArea.contains(tapLocation) {
             leftAction()
-        } else if rightArea.contains(point) {
+        } else if rightArea.contains(tapLocation) {
             rightAction()
         }
     }
@@ -237,27 +233,27 @@ extension StoryFeedView {
     
     //Action Methods
     @objc private func leftAction() {
-        self.stopAnimations()
         if viewModel.isOverlappingIndex(isIncreasing: false) {
             fillBars(upTo: viewModel.previousIndex()-1)
         } else {
             self.progressViews[self.viewModel.currentIndex()].setProgress(0.0, animated: false)
             self.progressViews[self.viewModel.previousIndex()].setProgress(0.0, animated: false)
         }
-        viewModel.decreaseIndex()
+        self.viewModel.decreaseIndex()
+        self.story = viewModel.currentStory()
         self.leftTapAction?()
     }
     
     @objc private func rightAction() {
-            self.stopAnimations()
-            if viewModel.isOverlappingIndex(isIncreasing: true) {
-                resetProgress()
-            } else {
-                self.fillBars(upTo: viewModel.currentIndex())
-            }
-            viewModel.increaseIndex()
-            self.rightTapAction?()
+        if viewModel.isOverlappingIndex(isIncreasing: true) {
+            resetProgress()
+        } else {
+            self.fillBars(upTo: viewModel.currentIndex())
         }
+        self.viewModel.increaseIndex()
+        self.story = viewModel.currentStory()
+        self.rightTapAction?()
+    }
     
     @objc private func holdAction() {
         progressBarAnimator.pauseAnimation()
@@ -279,13 +275,24 @@ extension StoryFeedView {
         } else {
             self.progressViews[self.viewModel.currentIndex()].setProgress(1.0, animated: false)
         }
-        viewModel.increaseIndex()
+        self.viewModel.increaseIndex()
+        self.story = viewModel.currentStory()
         self.timerDidEnd?()
     }
 }
 
 //MARK: - Progress Bar
 extension StoryFeedView {
+    private func setupBars() {
+        removeBars()
+        guard let amount = viewModel.amount else { return }
+        for _ in 0 ..< amount {
+            let bar = newProgressBar()
+            bar.translatesAutoresizingMaskIntoConstraints = false
+            progressStackView.addArrangedSubview(bar)
+        }
+    }
+    
     private func resetProgress() {
         self.progressStackView.subviews.forEach {
             if let bar =  $0 as? UIProgressView {

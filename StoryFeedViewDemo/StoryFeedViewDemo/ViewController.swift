@@ -25,8 +25,7 @@ class ViewController: UIViewController {
         let feed = StoryFeedView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height/2.1))
         
         feed.font = UIFont(name: "Montserrat-Medium", size: 20)
-        feed.amount = viewModel.count()
-        feed.story = viewModel.currentStory()
+        feed.stories(stories: viewModel.currentStories())
         feed.timeLimit = 5.0
         feed.tint = viewModel.tintColor
         
@@ -42,17 +41,15 @@ class ViewController: UIViewController {
         feed.timerDidEnd = {
             self.haptic.impactOccurred()
             self.viewModel.increaseIndex()
-            feed.story = self.viewModel.currentStory()
         }
         feed.rightTapAction = {
             self.haptic.impactOccurred()
             self.viewModel.increaseIndex()
-            feed.story = self.viewModel.currentStory()
         }
         feed.leftTapAction = {
             self.haptic.impactOccurred()
+            feed.moveTo(index: 3)
             self.viewModel.decreaseIndex()
-            feed.story = self.viewModel.currentStory()
         }
         feed.longPressAction = {
             self.haptic.impactOccurred()

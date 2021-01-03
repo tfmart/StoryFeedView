@@ -30,6 +30,10 @@ public class ViewModel {
         }
     }
     
+    public func currentStories() -> [Story] {
+        return self.stories
+    }
+    
     public func currentStory() -> Story? {
         return stories[index]
     }
@@ -40,10 +44,6 @@ public class ViewModel {
     
     public func decreaseIndex() {
         index = previousIndex()
-    }
-    
-    public func count() -> Int {
-        return news?.items?.count ?? 0
     }
     
     public func storyURL() -> URL? {
@@ -84,5 +84,9 @@ public class ViewModel {
         } else {
             return index - 1
         }
+    }
+    
+    private func count() -> Int {
+        return news?.items?.count ?? 0
     }
 }

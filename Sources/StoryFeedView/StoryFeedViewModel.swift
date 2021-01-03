@@ -10,17 +10,20 @@ import UIKit
 internal class StoryFeedViewModel {
     //MARK: - Properties
     private var index: Int = 0
-    var amount: Int?
     var timeLimit: Double = 5.0
-    var story: Story?
+    var stories: [Story]?
+    var amount: Int? {
+        return stories?.count
+    }
     
     //MARK: - Story methods
     func currentStory() -> Story? {
-        return nil
+        guard let stories = stories, let amount = amount, index < amount else { return nil }
+        return stories[index]
     }
     
-    func setStory(_ newStory: Story?) {
-        story = newStory
+    func setStories(_ stories: [Story]?) {
+        self.stories = stories
     }
     
     //MARK: - Index methods
@@ -71,6 +74,14 @@ internal class StoryFeedViewModel {
             return index == amount - 1
         } else {
             return index == 0
+        }
+    }
+    
+    func isValid(index: Int) -> Bool {
+        if let amount = amount, index >= 0, index < amount {
+            return true
+        } else {
+            return false
         }
     }
 }
