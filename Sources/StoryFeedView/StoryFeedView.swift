@@ -65,6 +65,7 @@ public class StoryFeedView: UIView {
     /// The amount of stories to be displayed
     public var amount: Int? {
         didSet {
+            removeBars()
             guard let amount = amount else { return }
             viewModel.amount = amount
             for _ in 0 ..< amount {
@@ -196,6 +197,12 @@ public class StoryFeedView: UIView {
         self.headlineAnimator.stopAnimation(true)
         self.imageViewAnimator.stopAnimation(true)
     }
+    
+    private func removeBars() {
+        self.progressStackView.subviews.forEach {
+            $0.removeFromSuperview()
+        }
+    }
 }
 
 //MARK: - Gestures
@@ -303,6 +310,7 @@ extension StoryFeedView {
         progressView.progress = 0.0
         progressView.layer.cornerRadius = 2.0
         progressView.heightAnchor.constraint(equalToConstant: 2.0).isActive = true
+        progressView.tintColor = self.tint
         return progressView
     }
     
