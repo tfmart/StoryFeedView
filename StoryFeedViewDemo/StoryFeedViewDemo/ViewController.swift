@@ -48,7 +48,6 @@ class ViewController: UIViewController {
         }
         feed.leftTapAction = {
             self.haptic.impactOccurred()
-            feed.moveTo(index: 3)
             self.viewModel.decreaseIndex()
         }
         feed.longPressAction = {
