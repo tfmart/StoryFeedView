@@ -56,7 +56,7 @@ public class StoryFeedView: UIView {
     }
     
     /// Story to be displayed
-    var story: Story? {
+    public var story: Story? {
         didSet {
             self.headlineLabel.alpha = 0.0
             self.imageViewAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
@@ -79,7 +79,7 @@ public class StoryFeedView: UIView {
     }
     
     /// The amount of stories to be displayed
-    var amount: Int? {
+    public var amount: Int? {
         didSet {
             guard let amount = amount else { return }
             viewModel.amount = amount
@@ -92,14 +92,14 @@ public class StoryFeedView: UIView {
     }
     
     /// The UIFont to be used by the headline label
-    var font: UIFont? {
+    public var font: UIFont? {
         didSet {
             headlineLabel.font = font
         }
     }
     
     /// Tint color of the progress bar
-    var tint: UIColor? {
+    public var tint: UIColor? {
         didSet {
             progressStackView.subviews.forEach {
                 if let bar =  $0 as? UIProgressView {
@@ -110,7 +110,7 @@ public class StoryFeedView: UIView {
     }
     
     /// Amount of time (in seconds) until the feed moves to the next story automatically. The default time is 5 seconds
-    var timeLimit: Double = 5.0 {
+    public var timeLimit: Double = 5.0 {
         didSet {
             self.stopAnimations()
             progressBarAnimator.addCompletion { _ in
@@ -126,35 +126,35 @@ public class StoryFeedView: UIView {
     
     //MARK: - Actions
     /// Action that is executed when the left side of the view is tapped
-    var leftTapAction: (() -> ())? {
+    public var leftTapAction: (() -> ())? {
         didSet {
             setupGestures()
         }
     }
     
     /// Action that is executed when the right side of the view is tapped
-    var rightTapAction: (() -> ())? {
+    public var rightTapAction: (() -> ())? {
         didSet {
             setupGestures()
         }
     }
     
     /// Action that is executed when the view detects a long press
-    var longPressAction: (() -> ())? {
+    public var longPressAction: (() -> ())? {
         didSet {
             setupGestures()
         }
     }
     
     /// Action that is executed when the view is released after a long press
-    var releaseLongPressAction: (() -> ())? {
+    public var releaseLongPressAction: (() -> ())? {
         didSet {
             setupGestures()
         }
     }
     
     /// Action that is executed when the headline label is tapped
-    var headlineAction: (() -> ())? {
+    public var headlineAction: (() -> ())? {
         didSet {
             self.headlineLabel.isUserInteractionEnabled = true
             let action = UITapGestureRecognizer(target: self, action: #selector(labelAction))
@@ -163,10 +163,10 @@ public class StoryFeedView: UIView {
     }
     
     /// Action that is executed when the current timer ends
-    var timerDidEnd: (() -> ())?
+    public var timerDidEnd: (() -> ())?
     
     //MARK: - Initializers
-    override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setupComponents()
         setupGestures()
