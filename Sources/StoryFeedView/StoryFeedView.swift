@@ -58,23 +58,7 @@ public class StoryFeedView: UIView {
     /// Story to be displayed
     public var story: Story? {
         didSet {
-            self.headlineLabel.alpha = 0.0
-            self.imageViewAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
-                UIView.transition(with: self.imageView,
-                                  duration: 0.5,
-                                  options: .transitionCrossDissolve,
-                                  animations: { self.imageView.image = self.story?.image },
-                                  completion: nil)
-            })
-            imageViewAnimator.addCompletion { _ in
-                self.headlineLabel.text = self.story?.headline
-                self.startProgress(for: self.progressViews[self.viewModel.currentIndex()])
-                self.headlineAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
-                    self.headlineLabel.alpha = 1.0
-                })
-                self.headlineAnimator.startAnimation()
-            }
-            self.imageViewAnimator.startAnimation()
+            resetAnimations()
         }
     }
     
@@ -112,7 +96,6 @@ public class StoryFeedView: UIView {
     /// Amount of time (in seconds) until the feed moves to the next story automatically. The default time is 5 seconds
     public var timeLimit: Double = 5.0 {
         didSet {
-            self.stopAnimations()
             progressBarAnimator.addCompletion { _ in
                 if self.viewModel.isOverlappingIndex(isIncreasing: true) {
                     self.resetProgress()
@@ -121,6 +104,7 @@ public class StoryFeedView: UIView {
                 }
                 self.timerAction()
             }
+            resetAnimations()
         }
     }
     
@@ -186,9 +170,29 @@ public class StoryFeedView: UIView {
         self.story = story
     }
     
+    private func resetAnimations() {
+        stopAnimations()
+        self.headlineLabel.alpha = 0.0
+        self.imageViewAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
+            UIView.transition(with: self.imageView,
+                              duration: 0.5,
+                              options: .transitionCrossDissolve,
+                              animations: { self.imageView.image = self.story?.image },
+                              completion: nil)
+        })
+        imageViewAnimator.addCompletion { _ in
+            self.headlineLabel.text = self.story?.headline
+            self.startProgress(for: self.progressViews[self.viewModel.currentIndex()])
+            self.headlineAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
+                self.headlineLabel.alpha = 1.0
+            })
+            self.headlineAnimator.startAnimation()
+        }
+        self.imageViewAnimator.startAnimation()
+    }
+    
     private func stopAnimations() {
         self.progressBarAnimator.stopAnimation(true)
-        self.gradientAnimator.stopAnimation(true)
         self.headlineAnimator.stopAnimation(true)
         self.imageViewAnimator.stopAnimation(true)
     }
