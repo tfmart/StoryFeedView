@@ -25,9 +25,8 @@ class ViewController: UIViewController {
         let feed = StoryFeedView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height/2.1))
         
         feed.font = UIFont(name: "Montserrat-Medium", size: 18)
-        feed.stories(stories: viewModel.currentStories())
-        feed.timeLimit = 5.0
-        feed.tint = viewModel.tintColor
+        feed.stories(viewModel.currentStories())
+        feed.progressTintColor = viewModel.tintColor
         
         feed.headlineAction = {
             guard let url = self.viewModel.storyURL() else { return }

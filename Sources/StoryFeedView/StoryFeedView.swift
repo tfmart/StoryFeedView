@@ -36,7 +36,6 @@ public class StoryFeedView: UIView {
     private var gradientView = UIView()
     
     private var progressBarAnimator = UIViewPropertyAnimator()
-    private var gradientAnimator = UIViewPropertyAnimator()
     private var headlineAnimator = UIViewPropertyAnimator()
     private var imageViewAnimator = UIViewPropertyAnimator()
     
@@ -55,13 +54,6 @@ public class StoryFeedView: UIView {
         }
     }
     
-    /// Story to be displayed
-    private var story: Story? {
-        didSet {
-            resetAnimations()
-        }
-    }
-    
     /// The UIFont to be used by the headline label
     public var font: UIFont? {
         didSet {
@@ -70,28 +62,13 @@ public class StoryFeedView: UIView {
     }
     
     /// Tint color of the progress bar
-    public var tint: UIColor? {
+    public var progressTintColor: UIColor? {
         didSet {
             progressStackView.subviews.forEach {
                 if let bar =  $0 as? UIProgressView {
-                    bar.progressTintColor = tint
+                    bar.progressTintColor = progressTintColor
                 }
             }
-        }
-    }
-    
-    /// Amount of time (in seconds) until the feed moves to the next story automatically. The default time is 5 seconds
-    public var timeLimit: Double = 5.0 {
-        didSet {
-            progressBarAnimator.addCompletion { _ in
-                if self.viewModel.isOverlappingIndex(isIncreasing: true) {
-                    self.resetProgress()
-                } else {
-                    self.fillBars(upTo: self.viewModel.currentIndex())
-                }
-                self.timerAction()
-            }
-            resetAnimations()
         }
     }
     
@@ -99,28 +76,28 @@ public class StoryFeedView: UIView {
     /// Action that is executed when the left side of the view is tapped
     public var leftTapAction: (() -> ())? {
         didSet {
-            setupGestures()
+            setupNavigationGestures()
         }
     }
     
     /// Action that is executed when the right side of the view is tapped
     public var rightTapAction: (() -> ())? {
         didSet {
-            setupGestures()
+            setupNavigationGestures()
         }
     }
     
     /// Action that is executed when the view detects a long press
     public var longPressAction: (() -> ())? {
         didSet {
-            setupGestures()
+            setupNavigationGestures()
         }
     }
     
     /// Action that is executed when the view is released after a long press
     public var releaseLongPressAction: (() -> ())? {
         didSet {
-            setupGestures()
+            setupNavigationGestures()
         }
     }
     
@@ -140,31 +117,34 @@ public class StoryFeedView: UIView {
     override public init(frame: CGRect) {
         super.init(frame: frame)
         setupComponents()
-        setupGestures()
+        setupNavigationGestures()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupComponents()
-        setupGestures()
+        setupNavigationGestures()
     }
     
     //MARK: - Methods
     /// Manually move to a specific index and story
     public func moveTo(index: Int) {
-        viewModel.setIndex(index)
         viewModel.setIndex(viewModel.isValid(index: index) ? index : 0)
         setupBars()
         if viewModel.currentIndex() > 0 {
-            self.fillBars(upTo: viewModel.currentIndex()-1)
+            fillBars(upTo: viewModel.currentIndex()-1)
         }
-        self.story = viewModel.currentStory()
+        resetAnimations()
     }
     
     /// Setup stories to be displayed  by the view and the index of the story to be displayed
-    public func stories(stories: [Story]?, moveTo index: Int = 0) {
+    public func stories(_ stories: [Story]?, moveTo index: Int = 0) {
         viewModel.setStories(stories)
         moveTo(index: index)
+    }
+    /// Set the amount of time (in seconds) until the feed moves to the next story automatically. The default time is 5 seconds
+    public func setTimeLimit(_ timeLimit: TimeInterval) {
+        viewModel.timeLimit = timeLimit
     }
     
     private func resetAnimations() {
@@ -174,11 +154,11 @@ public class StoryFeedView: UIView {
             UIView.transition(with: self.imageView,
                               duration: 0.5,
                               options: .transitionCrossDissolve,
-                              animations: { self.imageView.image = self.story?.image },
+                              animations: { self.imageView.image = self.viewModel.image() },
                               completion: nil)
         })
         imageViewAnimator.addCompletion { _ in
-            self.headlineLabel.text = self.story?.headline
+            self.headlineLabel.text = self.viewModel.headline()
             self.startProgress(for: self.progressViews[self.viewModel.currentIndex()])
             self.headlineAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
                 self.headlineLabel.alpha = 1.0
@@ -193,18 +173,12 @@ public class StoryFeedView: UIView {
         self.headlineAnimator.stopAnimation(true)
         self.imageViewAnimator.stopAnimation(true)
     }
-    
-    private func removeBars() {
-        self.progressStackView.subviews.forEach {
-            $0.removeFromSuperview()
-        }
-    }
 }
 
 //MARK: - Gestures
 extension StoryFeedView {
     //Setup methods
-    private func setupGestures() {
+    private func setupNavigationGestures() {
         let tapGestureRecongnizer = UITapGestureRecognizer(target: self, action: #selector(executeTap))
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         addGestureRecognizer(tapGestureRecongnizer)
@@ -240,18 +214,12 @@ extension StoryFeedView {
             self.progressViews[self.viewModel.previousIndex()].setProgress(0.0, animated: false)
         }
         self.viewModel.decreaseIndex()
-        self.story = viewModel.currentStory()
+        resetAnimations()
         self.leftTapAction?()
     }
     
     @objc private func rightAction() {
-        if viewModel.isOverlappingIndex(isIncreasing: true) {
-            resetProgress()
-        } else {
-            self.fillBars(upTo: viewModel.currentIndex())
-        }
-        self.viewModel.increaseIndex()
-        self.story = viewModel.currentStory()
+        self.nextProgress()
         self.rightTapAction?()
     }
     
@@ -270,13 +238,7 @@ extension StoryFeedView {
     }
     
     @objc private func timerAction() {
-        if viewModel.isOverlappingIndex(isIncreasing: true) {
-            resetProgress()
-        } else {
-            self.progressViews[self.viewModel.currentIndex()].setProgress(1.0, animated: false)
-        }
-        self.viewModel.increaseIndex()
-        self.story = viewModel.currentStory()
+        self.nextProgress()
         self.timerDidEnd?()
     }
 }
@@ -284,12 +246,12 @@ extension StoryFeedView {
 //MARK: - Progress Bar
 extension StoryFeedView {
     private func setupBars() {
-        removeBars()
+        self.progressStackView.subviews.forEach {
+            $0.removeFromSuperview()
+        }
         guard let amount = viewModel.amount else { return }
         for _ in 0 ..< amount {
-            let bar = newProgressBar()
-            bar.translatesAutoresizingMaskIntoConstraints = false
-            progressStackView.addArrangedSubview(bar)
+            progressStackView.addArrangedSubview(newProgressBar())
         }
     }
     
@@ -317,19 +279,29 @@ extension StoryFeedView {
         progressView.progress = 0.0
         progressView.layer.cornerRadius = 2.0
         progressView.heightAnchor.constraint(equalToConstant: 2.0).isActive = true
-        progressView.tintColor = self.tint
+        progressView.tintColor = self.progressTintColor
+        progressView.translatesAutoresizingMaskIntoConstraints = false
         return progressView
     }
     
     private func startProgress(for progressView: UIProgressView) {
-        progressBarAnimator = UIViewPropertyAnimator(duration: timeLimit, curve: .linear, animations: {
+        progressBarAnimator = viewModel.animator(animations: {
             progressView.setProgress(1.0, animated: true)
-        })
-        progressBarAnimator.addCompletion { _ in
+        }, completion: { _ in
             progressView.setProgress(0.0, animated: false)
             self.timerAction()
-        }
+        })
         progressBarAnimator.startAnimation()
+    }
+    
+    private func nextProgress() {
+        if viewModel.isOverlappingIndex(isIncreasing: true) {
+            resetProgress()
+        } else {
+            self.fillBars(upTo: viewModel.currentIndex())
+        }
+        self.viewModel.increaseIndex()
+        resetAnimations()
     }
 }
 
@@ -372,27 +344,12 @@ extension StoryFeedView {
     
     private func setupGradient() {
         self.gradientView.alpha = 0.0
-        if #available(iOS 13, *) {
-            gradient.colors = [
-                UIColor.clear.cgColor,
-                UIColor.systemBackground.resolvedColor(with: .current).withAlphaComponent(0.2).cgColor,
-                UIColor.systemBackground.resolvedColor(with: .current).withAlphaComponent(0.8).cgColor,
-                UIColor.systemBackground.resolvedColor(with: .current).cgColor
-            ]
-        } else {
-            gradient.colors = [
-                UIColor.clear.cgColor,
-                UIColor.white.withAlphaComponent(0.2).cgColor,
-                UIColor.white.withAlphaComponent(0.8).cgColor,
-                UIColor.white.cgColor
-            ]
-        }
+        gradient.colors = viewModel.gradientColors()
         gradient.frame = CGRect(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height/2.2)
         gradientView.layer.insertSublayer(gradient, at: 0)
-        gradientAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
+        UIView.animate(withDuration: 0.5) {
             self.gradientView.alpha = 1.0
-        })
-        gradientAnimator.startAnimation()
+        }
     }
     
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

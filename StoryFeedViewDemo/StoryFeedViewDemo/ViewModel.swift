@@ -34,10 +34,6 @@ public class ViewModel {
         return self.stories
     }
     
-    public func currentStory() -> Story? {
-        return stories[index]
-    }
-    
     public func increaseIndex() {
         index = nextIndex()
     }

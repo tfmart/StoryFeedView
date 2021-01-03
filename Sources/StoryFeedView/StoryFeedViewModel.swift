@@ -10,7 +10,7 @@ import UIKit
 internal class StoryFeedViewModel {
     //MARK: - Properties
     private var index: Int = 0
-    var timeLimit: Double = 5.0
+    var timeLimit: TimeInterval = 5.0
     var stories: [Story]?
     var amount: Int? {
         return stories?.count
@@ -26,6 +26,14 @@ internal class StoryFeedViewModel {
         self.stories = stories
     }
     
+    func headline() -> String? {
+        return currentStory()?.headline
+    }
+    
+    func image() -> UIImage? {
+        return currentStory()?.image
+    }
+    
     //MARK: - Index methods
     func currentIndex() -> Int {
         return index
@@ -36,10 +44,7 @@ internal class StoryFeedViewModel {
     }
     
     func previousIndex() -> Int {
-        guard let amount = amount else {
-            return index
-        }
-        if index == 0 {
+        if let amount = amount, isOverlappingIndex(isIncreasing: false) {
             return amount - 1
         } else {
             return index - 1
@@ -47,10 +52,7 @@ internal class StoryFeedViewModel {
     }
     
     func increaseIndex() {
-        guard let amount = amount else {
-            return
-        }
-        if index == amount - 1 {
+        if isOverlappingIndex(isIncreasing: true) {
             index = 0
         } else {
             index += 1
@@ -58,14 +60,7 @@ internal class StoryFeedViewModel {
     }
     
     func decreaseIndex() {
-        guard let amount = amount else {
-            return
-        }
-        if index == 0 {
-            index = amount - 1
-        } else {
-            index -= 1
-        }
+        index = previousIndex()
     }
     
     func isOverlappingIndex(isIncreasing: Bool) -> Bool {
@@ -83,5 +78,35 @@ internal class StoryFeedViewModel {
         } else {
             return false
         }
+    }
+    
+    //MARK: Colors and Animators {
+    func gradientColors() -> [CGColor] {
+        if #available(iOS 13, *) {
+            return [
+                UIColor.clear.cgColor,
+                UIColor.systemBackground.resolvedColor(with: .current).withAlphaComponent(0.2).cgColor,
+                UIColor.systemBackground.resolvedColor(with: .current).withAlphaComponent(0.8).cgColor,
+                UIColor.systemBackground.resolvedColor(with: .current).cgColor
+            ]
+        } else {
+            return [
+                UIColor.clear.cgColor,
+                UIColor.white.withAlphaComponent(0.2).cgColor,
+                UIColor.white.withAlphaComponent(0.8).cgColor,
+                UIColor.white.cgColor
+            ]
+        }
+    }
+    
+    func animator(duration: TimeInterval? = nil, curve: UIView.AnimationCurve = .linear, animations: (() -> Void)?, completion: @escaping (UIViewAnimatingPosition) -> Void) -> UIViewPropertyAnimator {
+        let animator: UIViewPropertyAnimator
+        if let duration = duration {
+            animator = UIViewPropertyAnimator(duration: duration, curve: curve, animations: animations)
+        } else {
+            animator = UIViewPropertyAnimator(duration: timeLimit, curve: curve, animations: animations)
+        }
+        animator.addCompletion(completion)
+        return animator
     }
 }
