@@ -7,7 +7,7 @@
 
 import UIKit
 
-class StoryFeedView: UIView {
+public class StoryFeedView: UIView {
     //MARK: - Components
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -376,7 +376,7 @@ extension StoryFeedView {
         gradientAnimator.startAnimation()
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         setupGradient()
     }
 }
