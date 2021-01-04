@@ -9,14 +9,14 @@ import UIKit
 
 public class StoryFeedView: UIView {
     //MARK: - Components
-    private lazy var imageView: UIImageView = {
+    internal lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()
     
-    private lazy var headlineLabel: UILabel = {
+    internal lazy var headlineLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         return label
@@ -35,14 +35,14 @@ public class StoryFeedView: UIView {
     private var gradient = CAGradientLayer()
     private var gradientView = UIView()
     
-    private var progressBarAnimator = UIViewPropertyAnimator()
-    private var headlineAnimator = UIViewPropertyAnimator()
-    private var imageViewAnimator = UIViewPropertyAnimator()
+    internal var progressBarAnimator = UIViewPropertyAnimator()
+    internal var headlineAnimator = UIViewPropertyAnimator()
+    internal var imageViewAnimator = UIViewPropertyAnimator()
     
     //MARK: - Properties
-    var viewModel = StoryFeedViewModel()
+    internal var viewModel = StoryFeedViewModel()
     
-    private var progressViews: [UIProgressView] {
+    internal var progressViews: [UIProgressView] {
         get {
             var bars = [UIProgressView]()
             progressStackView.subviews.forEach {
@@ -271,11 +271,7 @@ extension StoryFeedView {
     
     private func newProgressBar() -> UIProgressView {
         let progressView = UIProgressView(progressViewStyle: .default)
-        if #available(iOS 13, *) {
-            progressView.backgroundColor = UIColor.systemGray3
-        } else {
-            progressView.backgroundColor = UIColor.lightGray
-        }
+        progressView.backgroundColor = viewModel.progressBackgroundColor()
         progressView.progress = 0.0
         progressView.layer.cornerRadius = 2.0
         progressView.heightAnchor.constraint(equalToConstant: 2.0).isActive = true

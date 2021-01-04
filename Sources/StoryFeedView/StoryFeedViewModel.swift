@@ -99,6 +99,14 @@ internal class StoryFeedViewModel {
         }
     }
     
+    func progressBackgroundColor() -> UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemGray3
+        } else {
+            return UIColor.lightGray
+        }
+    }
+    
     func animator(duration: TimeInterval? = nil, curve: UIView.AnimationCurve = .linear, animations: (() -> Void)?, completion: @escaping (UIViewAnimatingPosition) -> Void) -> UIViewPropertyAnimator {
         let animator: UIViewPropertyAnimator
         if let duration = duration {
