@@ -38,7 +38,6 @@ class ViewController: UIViewController {
             self.present(safariVC, animated: true)
         }
         feed.timerDidEnd = {
-            self.haptic.impactOccurred()
             self.viewModel.increaseIndex()
         }
         feed.rightTapAction = {
