@@ -147,7 +147,7 @@ public class StoryFeedView: UIView {
         viewModel.timeLimit = timeLimit
     }
     
-    private func resetAnimations() {
+    internal func resetAnimations() {
         stopAnimations()
         self.headlineLabel.alpha = 0.0
         self.imageViewAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
@@ -168,7 +168,7 @@ public class StoryFeedView: UIView {
         self.imageViewAnimator.startAnimation()
     }
     
-    private func stopAnimations() {
+    internal func stopAnimations() {
         self.progressBarAnimator.stopAnimation(true)
         self.headlineAnimator.stopAnimation(true)
         self.imageViewAnimator.stopAnimation(true)
@@ -251,7 +251,7 @@ extension StoryFeedView {
         }
         guard let amount = viewModel.amount else { return }
         for _ in 0 ..< amount {
-            progressStackView.addArrangedSubview(newProgressBar())
+            progressStackView.addArrangedSubview(viewModel.newProgressBar(tintColor: progressTintColor))
         }
     }
     
@@ -267,17 +267,6 @@ extension StoryFeedView {
         for index in 0 ... position {
             self.progressViews[index].setProgress(1.0, animated: false)
         }
-    }
-    
-    private func newProgressBar() -> UIProgressView {
-        let progressView = UIProgressView(progressViewStyle: .default)
-        progressView.backgroundColor = viewModel.progressBackgroundColor()
-        progressView.progress = 0.0
-        progressView.layer.cornerRadius = 2.0
-        progressView.heightAnchor.constraint(equalToConstant: 2.0).isActive = true
-        progressView.tintColor = self.progressTintColor
-        progressView.translatesAutoresizingMaskIntoConstraints = false
-        return progressView
     }
     
     private func startProgress(for progressView: UIProgressView) {

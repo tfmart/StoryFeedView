@@ -80,7 +80,7 @@ internal class StoryFeedViewModel {
         }
     }
     
-    //MARK: Colors and Animators {
+    //MARK: UI Elements and Animators {
     func gradientColors() -> [CGColor] {
         if #available(iOS 13, *) {
             return [
@@ -116,5 +116,16 @@ internal class StoryFeedViewModel {
         }
         animator.addCompletion(completion)
         return animator
+    }
+    
+    func newProgressBar(tintColor: UIColor?) -> UIProgressView {
+        let progressView = UIProgressView(progressViewStyle: .default)
+        progressView.backgroundColor = progressBackgroundColor()
+        progressView.progress = 0.0
+        progressView.layer.cornerRadius = 2.0
+        progressView.heightAnchor.constraint(equalToConstant: 2.0).isActive = true
+        progressView.progressTintColor = tintColor
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        return progressView
     }
 }
