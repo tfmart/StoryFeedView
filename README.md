@@ -38,8 +38,10 @@ Then you can customize the `StoryFeedView` with the following parameters:
 ```
 // Font to be displayed by the headline label
 storyFeed.font = UIFont()
+
 // The tint color of the progress bars
 storyFeed.progressTintColor = .systemRed
+
 // Set the time limit for the view to progress between stories (default is 5.0 seconds)
 storyFeed.setTimeLimit(7.0)
 ```
