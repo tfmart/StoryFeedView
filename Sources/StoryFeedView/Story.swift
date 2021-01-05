@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct Story {
+public struct Story: Equatable {
     public var image: UIImage?
     public var headline: String?
     

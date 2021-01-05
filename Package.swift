@@ -23,9 +23,11 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "StoryFeedView",
-            dependencies: []),
+            dependencies: [],
+            resources: [.process("Resources")]),
         .testTarget(
             name: "StoryFeedViewTests",
-            dependencies: ["StoryFeedView"]),
+            dependencies: ["StoryFeedView"],
+            resources: [.copy("Resources")]),
     ]
 )
