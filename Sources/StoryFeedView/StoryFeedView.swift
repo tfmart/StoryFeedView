@@ -129,7 +129,7 @@ public class StoryFeedView: UIView {
     //MARK: - Methods
     /// Manually move to a specific index and story
     public func moveTo(index: Int) {
-        viewModel.setIndex(viewModel.isValid(index: index) ? index : 0)
+        viewModel.setIndex(index)
         setupBars()
         if viewModel.currentIndex() > 0 {
             fillBars(upTo: viewModel.currentIndex()-1)

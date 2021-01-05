@@ -40,7 +40,7 @@ internal class StoryFeedViewModel {
     }
     
     func setIndex(_ newValue: Int) {
-        index = newValue
+        index = isValid(index: newValue) ? newValue : 0
     }
     
     func previousIndex() -> Int {
