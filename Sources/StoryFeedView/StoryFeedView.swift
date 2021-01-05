@@ -158,6 +158,7 @@ public class StoryFeedView: UIView {
                               completion: nil)
         })
         imageViewAnimator.addCompletion { _ in
+            guard self.viewModel.isValid(index: self.viewModel.currentIndex()) else { return }
             self.headlineLabel.text = self.viewModel.headline()
             self.startProgress(for: self.progressViews[self.viewModel.currentIndex()])
             self.headlineAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
@@ -264,6 +265,7 @@ extension StoryFeedView {
     }
     
     private func fillBars(upTo position: Int) {
+        guard viewModel.isValid(index: position) else { return }
         for index in 0 ... position {
             self.progressViews[index].setProgress(1.0, animated: false)
         }

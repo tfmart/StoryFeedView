@@ -73,7 +73,7 @@ internal class StoryFeedViewModel {
     }
     
     func isValid(index: Int) -> Bool {
-        if let amount = amount, index >= 0, index < amount {
+        if let amount = amount, amount > 0, index >= 0, index < amount {
             return true
         } else {
             return false
