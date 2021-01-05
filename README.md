@@ -1,5 +1,23 @@
 # StoryFeed
 
+
+## Installation
+
+Currently, this package can be installed through the *[Swift Package Manager](https://swift.org/package-manager/)*
+
+If you're running Xcode 11 or later, you can simply go to `File -> Swift Package Manager -> Add Package Dependency...` and search for `SWGOFloat` or just paste this Github page URL on the text field
+
+If you're running an earlier version, you'll have to set up SPM on your project and add the following dependency to your `Package.swift` file:
+
+```
+dependencies: [
+.package(url: "https://github.com/tfmart/StoryFeedView.git", from: "0.1.0")
+]
+```
+
+
+## Setting up the view
+
 To setup a new `StoryFeed`, instantiate a `StoryFeedView`:
 ```
 let storyFeed = StoryFeedView()
@@ -58,3 +76,6 @@ storyFeed.moveTo(2)
 ```
 
 Keep in mind that if you insert an invalid index (out of bounds of stories array), the feed will return to the first page
+
+## Demo
+This repository contains a demo iOS project. Feel free to check the `StoryFeedView` in action and tweak it!
