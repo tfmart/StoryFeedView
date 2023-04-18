@@ -5,7 +5,7 @@
 
 Currently, this package can be installed through the *[Swift Package Manager](https://swift.org/package-manager/)*
 
-If you're running Xcode 11 or later, you can simply go to `File -> Swift Package Manager -> Add Package Dependency...` and search for `SWGOFloat` or just paste this Github page URL on the text field
+If you're running Xcode 11 or later, you can simply go to `File -> Swift Package Manager -> Add Package Dependency...` and search for `StoryFeedView` or just paste this Github page URL on the text field
 
 If you're running an earlier version, you'll have to set up SPM on your project and add the following dependency to your `Package.swift` file:
 
